@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3 uid="uid://dxsgxbmf1ctg6"]
+
+[ext_resource type="Script" path="res://TileVoid.gd" id="1_bwwb8"]
+
+[sub_resource type="Gradient" id="Gradient_yy4ok"]
+colors = PackedColorArray(0.298039, 0.298039, 0.298039, 1, 0.298039, 0.298039, 0.298039, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_fqyrj"]
+gradient = SubResource("Gradient_yy4ok")
+width = 128
+height = 128
+
+[node name="TileVoid" type="Node2D"]
+script = ExtResource("1_bwwb8")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = SubResource("GradientTexture2D_fqyrj")

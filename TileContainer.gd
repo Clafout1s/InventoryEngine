@@ -1,0 +1,66 @@
+
+class_name TileContainer extends TileAbstract
+
+var selected:bool = false
+var mouse_controls:bool = false
+var content:Variant
+var spriteSelected:CompressedTexture2D
+var spriteNormal:CompressedTexture2D
+func _to_string():
+	return "TileContainer"
+
+func _init():
+	pass
+
+func _ready():
+	super.verify_texture_size()
+
+func load_sprites(sprite_normal:CompressedTexture2D,sprite_selected:CompressedTexture2D):
+	self.spriteSelected = sprite_selected
+	self.spriteNormal = sprite_normal
+	unselect_tile()
+
+func _on_area_2d_mouse_entered():
+	if(mouse_controls):
+		select_tile()
+
+func _on_area_2d_mouse_exited():
+	if mouse_controls:
+		unselect_tile()
+
+func select_tile():
+	selected = true
+	$Sprite2D.texture = spriteSelected
+
+func unselect_tile():
+	selected = false
+	$Sprite2D.texture = spriteNormal
+
+func add_item(item:PackedScene):
+	if(content == null):
+		content = item.instantiate()
+		add_child(content)
+
+func next_left()->TileAbstract:
+	if left is TileAbstract and not left is TileContainer:
+		return left.next_left()
+	else:
+		return left
+
+func next_up()->TileAbstract:
+	if up is TileAbstract and not up is TileContainer:
+		return up.next_up()
+	else:
+		return up
+	
+func next_right()->TileAbstract:
+	if right is TileAbstract and not right is TileContainer:
+		return right.next_right()
+	else:
+		return right
+
+func next_down()->TileAbstract:
+	if down is TileAbstract and not down is TileContainer:
+		return down.next_down()
+	else:
+		return down
