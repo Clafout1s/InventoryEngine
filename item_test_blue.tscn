@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://pn5n761o8ynd"]
+
+[ext_resource type="Texture2D" uid="uid://qf6nbp42jvpn" path="res://images/blue_square_tex.png" id="1_22kqi"]
+
+[node name="Node2D" type="Node2D"]
+scale = Vector2(0.7, 0.7)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_22kqi")

@@ -6,7 +6,7 @@ var tile_void_scene = preload("res://TileVoid.tscn")
 
 func _ready():
 	var generator = Generator.new()
-	var teststr = " 0 0 0 0 0 00 0
+	var teststr = " 0 0 0 0 0 0 0 0
 	0 0 0 0 X X X 0
 	0 X 0 0 X 0 0 0 
 	0 0 0 0 " 

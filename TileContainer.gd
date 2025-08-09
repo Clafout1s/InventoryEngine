@@ -3,7 +3,7 @@ class_name TileContainer extends TileAbstract
 
 var selected:bool = false
 var mouse_controls:bool = false
-var content:Variant
+var content:Node2D
 var spriteSelected:CompressedTexture2D
 var spriteNormal:CompressedTexture2D
 func _to_string():
@@ -39,6 +39,7 @@ func unselect_tile():
 func add_item(item:PackedScene):
 	if(content == null):
 		content = item.instantiate()
+		print(content)
 		add_child(content)
 
 func next_left()->TileAbstract:
@@ -64,3 +65,5 @@ func next_down()->TileAbstract:
 		return down.next_down()
 	else:
 		return down
+	
+	
