@@ -31,9 +31,11 @@ func _on_area_2d_mouse_exited():
 func select_tile():
 	selected = true
 	$Sprite2D.texture = spriteSelected
+	modulate.a = 0.7
 
 func unselect_tile():
 	selected = false
+	modulate.a = 1
 	$Sprite2D.texture = spriteNormal
 
 func add_item(item:PackedScene):

@@ -1,6 +1,9 @@
 extends Node2D
 
 var constructed:bool = false
+var blocked = false
+var moving = false
+var move_speed = 0
 var tile_array:Array
 var tile_data:TileGenerationData
 var active_scene:Node2D
@@ -8,21 +11,21 @@ var selected_tile:TileContainer
 var pickedItem=null
 
 func _process(_delta):
-	if constructed:
+	if constructed and not blocked and not moving:
 		if Input.is_action_just_pressed("up"):
-			up_key_function()
+			up_key_function(_delta)
 		if Input.is_action_just_pressed("down"):
-			down_key_function()
+			down_key_function(_delta)
 		if Input.is_action_just_pressed("left"):
-			left_key_function()
+			left_key_function(_delta)
 		if Input.is_action_just_pressed("right"):
-			right_key_function()
+			right_key_function(_delta)
 		if Input.is_action_just_pressed("leftClick"):
-			left_click_function()
+			left_click_function(_delta)
 		if Input.is_action_just_pressed("rightClick"):
-			right_click_function()
-		
-		
+			right_click_function(_delta)
+	animations_process(_delta)
+	
 func constructor(scene:Node2D,tile_array:Array,tile_data:TileGenerationData):
 	self.tile_array = tile_array
 	self.tile_data = tile_data
@@ -51,22 +54,26 @@ func find_first_container_tile()->TileContainer:
 			column = 0
 	return result
 
-func left_click_function():
+func left_click_function(_delta):
 	pick_item(selected_tile)
 
-func right_click_function():
+func right_click_function(_delta):
 	selected_tile.add_item(preload("res://InventoryItem.tscn"))
 	
-func left_key_function():
+func left_key_function(_delta):
+	move_animation_start(_delta)
 	select_tile(selected_tile.next_left())
 
-func right_key_function():
+func right_key_function(_delta):
+	move_animation_start(_delta)
 	select_tile(selected_tile.next_right())
 
-func up_key_function():
+func up_key_function(_delta):
+	move_animation_start(_delta)
 	select_tile(selected_tile.next_up())
 
-func down_key_function():
+func down_key_function(_delta):
+	move_animation_start(_delta)
 	select_tile(selected_tile.next_down())
 
 func select_tile(new_tile:TileContainer):
@@ -74,8 +81,10 @@ func select_tile(new_tile:TileContainer):
 		selected_tile.unselect_tile()
 		new_tile.select_tile()
 		selected_tile = new_tile
+		"""
 		if pickedItem != null:
-			pickedItem.position = selected_tile.position + Vector2(+tile_data.margin * 2.,-tile_data.margin * 2)
+			pickedItem.position = selected_tile.position
+		"""
 
 func pick_item(tile:TileContainer):
 	if tile is TileContainer:
@@ -105,12 +114,31 @@ func pick_item(tile:TileContainer):
 				tile.content = null
 				self.add_child(pickedItem)
 				hover_item(pickedItem)
-			
+
+func animations_process(_delta):
+	if moving:
+		if pickedItem == null:
+			moving = false
+		else:
+			move_speed+= _delta * 2.5
+			var lerp_move = pickedItem.position.lerp(selected_tile.position,move_speed )
+			pickedItem.position = lerp_move
+			print(lerp_move)
+			if pickedItem.position.round() == selected_tile.position.round():
+				moving = false
+				
+		
+
+func move_animation_start(_delta):
+	moving = true
+	move_speed = 0 
+
 func hover_item(item:Node2D):
-	item.modulate.a = 0.8
-	print(item.position)
-	item.position = selected_tile.position + Vector2(+tile_data.margin * 2.,-tile_data.margin * 2)
+	item.scale += Vector2(0.1,0.1)
+	item.modulate.a = 0.9
+	item.position = selected_tile.position
 
 func land_item(item:Node2D):
 	item.modulate.a = 1
+	item.scale -= Vector2(0.1,0.1)
 	item.position = Vector2(0,0)
