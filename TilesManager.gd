@@ -10,7 +10,7 @@ var active_scene:Node2D
 var selected_tile:TileContainer
 var pickedItem=null
 
-func _process(_delta):
+func _physics_process(_delta):
 	if constructed and not blocked and not moving:
 		if Input.is_action_just_pressed("up"):
 			up_key_function(_delta)
@@ -97,6 +97,7 @@ func pick_item(tile:TileContainer):
 				
 				pickedItem = null
 			else:
+				$SwapItem.play()
 				tile.remove_child(tile.content)
 				self.remove_child(pickedItem)
 				land_item(pickedItem)
@@ -132,13 +133,16 @@ func animations_process(_delta):
 func move_animation_start(_delta):
 	moving = true
 	move_speed = 0 
+	$MoveSelect.play()
 
 func hover_item(item:Node2D):
 	item.scale += Vector2(0.1,0.1)
 	item.modulate.a = 0.9
 	item.position = selected_tile.position
+	$PickItem.play()
 
 func land_item(item:Node2D):
 	item.modulate.a = 1
 	item.scale -= Vector2(0.1,0.1)
 	item.position = Vector2(0,0)
+	$DropItem.play()

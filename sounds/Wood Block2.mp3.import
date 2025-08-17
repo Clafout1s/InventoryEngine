@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bcos4l4cqkndo"
+path="res://.godot/imported/Wood Block2.mp3-ea728e52d9be0596fe448cbb807f2bbd.mp3str"
+
+[deps]
+
+source_file="res://sounds/Wood Block2.mp3"
+dest_files=["res://.godot/imported/Wood Block2.mp3-ea728e52d9be0596fe448cbb807f2bbd.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
