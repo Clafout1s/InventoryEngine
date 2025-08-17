@@ -3,7 +3,7 @@ class_name TileContainer extends TileAbstract
 
 var selected:bool = false
 var mouse_controls:bool = false
-var content:Node2D
+var content:Array
 var spriteSelected:CompressedTexture2D
 var spriteNormal:CompressedTexture2D
 func _to_string():
@@ -38,11 +38,17 @@ func unselect_tile():
 	modulate.a = 1
 	$Sprite2D.texture = spriteNormal
 
-func add_item(item:PackedScene):
-	if(content == null):
-		content = item.instantiate()
-		print(content)
-		add_child(content)
+func add_item(item:Node2D):
+	assert(item.has_method("equals"))
+	content.push_back(item)
+	if content.size() == 1:
+		add_child(item)
+
+func remove_item()->Node2D:
+	var old_content = content.pop_back()
+	if content.size() == 0:
+		remove_child(old_content)
+	return old_content
 
 func next_left()->TileAbstract:
 	if left is TileAbstract and not left is TileContainer:

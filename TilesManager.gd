@@ -8,7 +8,7 @@ var tile_array:Array
 var tile_data:TileGenerationData
 var active_scene:Node2D
 var selected_tile:TileContainer
-var pickedItem=null
+var pickedItem:Node2D=null
 
 func _physics_process(_delta):
 	if constructed and not blocked and not moving:
@@ -34,7 +34,7 @@ func constructor(scene:Node2D,tile_array:Array,tile_data:TileGenerationData):
 	if(first != null):
 		first.select_tile()
 		selected_tile = first
-		first.add_item(preload("res://InventoryItem.tscn"))
+		first.add_item(preload("res://InventoryItem.tscn").instantiate())
 	constructed = true
 	return self
 
@@ -58,7 +58,7 @@ func left_click_function(_delta):
 	pick_item(selected_tile)
 
 func right_click_function(_delta):
-	selected_tile.add_item(preload("res://InventoryItem.tscn"))
+	selected_tile.add_item(preload("res://InventoryItem.tscn").instantiate())
 	
 func left_key_function(_delta):
 	move_animation_start(_delta)
@@ -89,30 +89,38 @@ func select_tile(new_tile:TileContainer):
 func pick_item(tile:TileContainer):
 	if tile is TileContainer:
 		if pickedItem != null:
-			if tile.content == null:
+			# Drop picked item
+			if tile.content == []:
 				self.remove_child(pickedItem)
 				land_item(pickedItem)
-				tile.add_child(pickedItem)
-				tile.content = pickedItem
-				
+				tile.add_item(pickedItem)
 				pickedItem = null
 			else:
+				# Swap or stack items
 				$SwapItem.play()
-				tile.remove_child(tile.content)
-				self.remove_child(pickedItem)
-				land_item(pickedItem)
-				tile.add_child(pickedItem)
-				var tempo = pickedItem
-				pickedItem = tile.content
-				tile.content = tempo
-				self.add_child(pickedItem)
-				hover_item(pickedItem)
+				var old_content = tile.remove_item()
+				if pickedItem.equals(old_content):
+					# Stack
+					tile.add_item(old_content)
+					tile.add_item(pickedItem)
+					self.remove_child(pickedItem)
+					land_item(pickedItem)
+					pickedItem = null
+				else:
+					# Swap
+					self.remove_child(pickedItem)
+					land_item(pickedItem)
+					var tempo = pickedItem
+					pickedItem = old_content
+					tile.add_item(tempo)
+					self.add_child(pickedItem)
+					hover_item(pickedItem)
 				
 		else:
-			if tile.content != null:
-				pickedItem = tile.content
-				tile.remove_child(tile.content)
-				tile.content = null
+			if tile.content != []:
+				# Pick item
+				var old_content = tile.remove_item()
+				pickedItem = old_content
 				self.add_child(pickedItem)
 				hover_item(pickedItem)
 
@@ -124,11 +132,8 @@ func animations_process(_delta):
 			move_speed+= _delta * 2.5
 			var lerp_move = pickedItem.position.lerp(selected_tile.position,move_speed )
 			pickedItem.position = lerp_move
-			print(lerp_move)
 			if pickedItem.position.round() == selected_tile.position.round():
 				moving = false
-				
-		
 
 func move_animation_start(_delta):
 	moving = true
