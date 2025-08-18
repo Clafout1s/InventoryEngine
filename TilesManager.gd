@@ -8,7 +8,7 @@ var tile_array:Array
 var tile_data:TileGenerationData
 var active_scene:Node2D
 var selected_tile:TileContainer
-var pickedItem:Node2D=null
+var pickedItems:Array=[]
 
 func _physics_process(_delta):
 	if constructed and not blocked and not moving:
@@ -55,7 +55,7 @@ func find_first_container_tile()->TileContainer:
 	return result
 
 func left_click_function(_delta):
-	pick_item(selected_tile)
+	pick_items(selected_tile)
 
 func right_click_function(_delta):
 	selected_tile.add_item(preload("res://InventoryItem.tscn").instantiate())
@@ -81,58 +81,59 @@ func select_tile(new_tile:TileContainer):
 		selected_tile.unselect_tile()
 		new_tile.select_tile()
 		selected_tile = new_tile
-		"""
-		if pickedItem != null:
-			pickedItem.position = selected_tile.position
-		"""
 
-func pick_item(tile:TileContainer):
+func pick_items(tile:TileContainer):
 	if tile is TileContainer:
-		if pickedItem != null:
-			# Drop picked item
-			if tile.content == []:
-				self.remove_child(pickedItem)
-				land_item(pickedItem)
-				tile.add_item(pickedItem)
-				pickedItem = null
+		if pickedItems != []:
+			# Drop picked items
+			if tile.content == [] or tile.content[0].equals(pickedItems[0]):
+				var last_picked_item
+				while pickedItems != []:
+					last_picked_item = pickedItems.pop_back()
+					if pickedItems == []:
+						land_item(last_picked_item)
+						self.remove_child(last_picked_item)
+					tile.add_item(last_picked_item)
 			else:
-				# Swap or stack items
+				# Swap items
 				$SwapItem.play()
-				var old_content = tile.remove_item()
-				if pickedItem.equals(old_content):
-					# Stack
-					tile.add_item(old_content)
-					tile.add_item(pickedItem)
-					self.remove_child(pickedItem)
-					land_item(pickedItem)
-					pickedItem = null
-				else:
-					# Swap
-					self.remove_child(pickedItem)
-					land_item(pickedItem)
-					var tempo = pickedItem
-					pickedItem = old_content
-					tile.add_item(tempo)
-					self.add_child(pickedItem)
-					hover_item(pickedItem)
-				
+				var last_tile_content
+				var temporary_array = []
+				for i_tile in range(tile.content.size()):
+					temporary_array.push_front(tile.remove_item()) # pushing front to preserve order
+				for i_picked in range(pickedItems.size()):
+					var last_picked_item = pickedItems.pop_front()
+					if(i_picked == 0):
+						self.remove_child(last_picked_item)
+						land_item(last_picked_item)
+					tile.add_item(last_picked_item) # popping front to preserve order
+				for i_tempo in range(temporary_array.size()):
+					var last_tempo_item = temporary_array.pop_back()
+					if(i_tempo == 0):
+						self.add_child(last_tempo_item)
+						hover_item(last_tempo_item)
+					pickedItems.push_back(last_tempo_item)
+					
 		else:
 			if tile.content != []:
-				# Pick item
-				var old_content = tile.remove_item()
-				pickedItem = old_content
-				self.add_child(pickedItem)
-				hover_item(pickedItem)
+				# Pick items
+				var last_tile_content
+				for i in range(tile.content.size()):
+					last_tile_content = tile.remove_item()
+					if i == 0:
+						self.add_child(last_tile_content)
+						hover_item(last_tile_content)
+					pickedItems.push_back(last_tile_content)
 
 func animations_process(_delta):
 	if moving:
-		if pickedItem == null:
+		if pickedItems == []:
 			moving = false
 		else:
 			move_speed+= _delta * 2.5
-			var lerp_move = pickedItem.position.lerp(selected_tile.position,move_speed )
-			pickedItem.position = lerp_move
-			if pickedItem.position.round() == selected_tile.position.round():
+			var lerp_move = pickedItems[0].position.lerp(selected_tile.position,move_speed )
+			pickedItems[0].position = lerp_move
+			if pickedItems[0].position.round() == selected_tile.position.round():
 				moving = false
 
 func move_animation_start(_delta):
