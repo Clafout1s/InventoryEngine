@@ -1,8 +1,8 @@
 extends Node2D
+## The starter scene, to begin the creation of tiles
 
 var tile_container_scene = preload("res://TileContainer.tscn")
 var tile_void_scene = preload("res://TileVoid.tscn")
-
 
 func _ready():
 	var generator = Generator.new()

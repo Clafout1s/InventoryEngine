@@ -9,15 +9,21 @@ var tile_container_scene:PackedScene = preload("res://TileContainer.tscn")
 ## The scene of a void tile.
 var tile_void_scene:PackedScene = preload("res://TileVoid.tscn")
 
-## Generate all the tiles by following a specific input string. [br]
-## [param scene]: The scene in which the tiles will be created [br]
+## Generate all the tiles in a [TilesManager] by following a specific input string. 
+## Returns the [TilesManager] with all the tiles generated. [br]
+## [param scene]: The scene in which the [TilesManager] will be created. [br]
+## [param data]: Stores the parameters for generation in a cleaner way. 
+## [param input_str], [param margin], [param tile_size], [param tile_sprite_normal] and [param tile_sprite_selected] 
+## are all stored in it. [br]
 ## [param input_str]: The string that indicates tile placement. 
 ## It forms a matrix where only [b]0[/b] (TileVoid), [b]X[/b] (TileContainer), [b]underscores[/b] (absence of tile)
 ## and [b]line breaks[/b] are considered. [br]
 ## [param margin]: The margin between tiles. [br]
 ## [param tile_size]: The maximum possible size of a tile. If it is too big to fit, the size will be
-## automatically recalculated.
-## Exemple of an the input_str: [br]
+## automatically recalculated. [br]
+## [param tile_sprite_normal]: The texture file of an unselected tile (128x128 pixels). [br]
+## [param tile_sprite_selected]: The texture file of a selected tile (128x128 pixels). [br]
+## Exemple of an [param input_str]: [br]
 ## [codeblock] "0 0 X 0 0    
 ##   0 X 0 _ _
 ##   0 0 X 0 0"   [/codeblock]
@@ -80,7 +86,8 @@ func generate_tiles(scene:Node2D,data:TileGenerationData)->Node2D:
 				tile = tile_container_scene.instantiate()
 
 			manager.add_child(tile)
-			tile.load_sprites(data.tile_sprite_normal,data.tile_sprite_selected)
+			if tile is TileContainer:
+				tile.load_sprites(data.tile_sprite_normal,data.tile_sprite_selected)
 			tile.position = posi_tile
 			var actual_size = tile.texture_size
 			# tile_container.get_node("Sprite2D").texture.get_size() -> to get texture size
