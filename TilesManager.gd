@@ -39,8 +39,13 @@ func constructor(scene:Node2D,tile_array:Array,tile_data:TileGenerationData):
 		first.select_tile()
 		selected_tile = first
 		first.add_item(preload("res://InventoryItem.tscn").instantiate())
-	constructed = true
+	var rng = RandomNumberGenerator.new()
+	for i in range(tile_array.size()):
+		for y in range(tile_array.size()):
+			if rng.randf() >= 2./3.:
+				tile_array[i][y].add_item(preload("res://InventoryItem.tscn").instantiate())
 	$LabelCounter.position = tile_array[0][0].get_node("Label").global_position
+	constructed = true
 	return self
 
 func find_first_container_tile()->TileContainer:
@@ -101,7 +106,6 @@ func pick_items(tile:TileContainer):
 					if pickedItems == []:
 						land_item(last_picked_item)
 						self.remove_child(last_picked_item)
-					
 					tile.add_item(last_picked_item)
 			else:
 				# Swap items
@@ -132,7 +136,6 @@ func pick_items(tile:TileContainer):
 					if i == 0:
 						self.add_child(last_tile_content)
 						hover_item(last_tile_content)
-						
 					pickedItems.push_back(last_tile_content)
 
 		if pickedItems.size() > 1:

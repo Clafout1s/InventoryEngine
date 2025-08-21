@@ -8,6 +8,6 @@ func _ready():
 	get_node("Sprite2D").texture = active_sprite
 
 func equals(other:Node2D)->bool:
-	if other is InventoryItem and other.get_node("Sprite2D").texture == self.get_node("Sprite2D").texture:
+	if other is InventoryItem and other.active_sprite == self.active_sprite:
 		return true
 	return false

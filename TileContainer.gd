@@ -40,10 +40,11 @@ func unselect_tile():
 
 func add_item(item:Node2D):
 	assert(item.has_method("equals"))
-	content.push_back(item)
-	add_to_display(1)
-	if content.size() == 1:
-		add_child(item)
+	if content == [] or (content != [] and content[0].equals(item)):
+		content.push_back(item)
+		add_to_display(1)
+		if content.size() == 1:
+			add_child(item)
 
 func remove_item()->Node2D:
 	var old_content = content.pop_back()
