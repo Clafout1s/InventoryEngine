@@ -1,10 +1,30 @@
-[gd_scene load_steps=6 format=3 uid="uid://dx6vhj2dwd0f0"]
+[gd_scene load_steps=8 format=3 uid="uid://dx6vhj2dwd0f0"]
 
 [ext_resource type="Script" path="res://TilesManager.gd" id="1_gmy3a"]
 [ext_resource type="AudioStream" uid="uid://w3x5npibqmwe" path="res://sounds/Retro2.mp3" id="2_0qi78"]
 [ext_resource type="AudioStream" uid="uid://c43sh87r16e11" path="res://sounds/Wood Block1.mp3" id="3_xaw67"]
 [ext_resource type="AudioStream" uid="uid://bcos4l4cqkndo" path="res://sounds/Wood Block2.mp3" id="4_40vw1"]
 [ext_resource type="AudioStream" uid="uid://bv20arm3anlam" path="res://sounds/Wood Block3.mp3" id="5_jxyoc"]
+
+[sub_resource type="FontFile" id="FontFile_ckbpw"]
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/40/0 = Vector2(0, 0)
+cache/0/40/0/ascent = 0.0
+cache/0/40/0/descent = 0.0
+cache/0/40/0/underline_position = 0.0
+cache/0/40/0/underline_thickness = 0.0
+cache/0/40/0/scale = 1.0
+cache/0/40/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/40/0/kerning_overrides/40/0 = Vector2(0, 0)
+
+[sub_resource type="LabelSettings" id="LabelSettings_0otvx"]
+font = SubResource("FontFile_ckbpw")
+font_size = 40
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource("1_gmy3a")
@@ -21,3 +41,12 @@ stream = ExtResource("4_40vw1")
 
 [node name="SwapItem" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("5_jxyoc")
+
+[node name="LabelCounter" type="Label" parent="."]
+visible = false
+offset_right = 40.0
+offset_bottom = 48.0
+text = "0"
+label_settings = SubResource("LabelSettings_0otvx")
+horizontal_alignment = 1
+vertical_alignment = 1

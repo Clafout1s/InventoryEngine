@@ -10,6 +10,10 @@ var active_scene:Node2D
 var selected_tile:TileContainer
 var pickedItems:Array=[]
 
+func _ready():
+	#$LabelCounter.position = tile_array[0].get_node("Label").position
+	pass
+
 func _physics_process(_delta):
 	if constructed and not blocked and not moving:
 		if Input.is_action_just_pressed("up"):
@@ -36,6 +40,7 @@ func constructor(scene:Node2D,tile_array:Array,tile_data:TileGenerationData):
 		selected_tile = first
 		first.add_item(preload("res://InventoryItem.tscn").instantiate())
 	constructed = true
+	$LabelCounter.position = tile_array[0][0].get_node("Label").global_position
 	return self
 
 func find_first_container_tile()->TileContainer:
@@ -58,7 +63,8 @@ func left_click_function(_delta):
 	pick_items(selected_tile)
 
 func right_click_function(_delta):
-	selected_tile.add_item(preload("res://InventoryItem.tscn").instantiate())
+	if selected_tile.content == []:
+		selected_tile.add_item(preload("res://InventoryItem.tscn").instantiate())
 	
 func left_key_function(_delta):
 	move_animation_start(_delta)
@@ -81,6 +87,8 @@ func select_tile(new_tile:TileContainer):
 		selected_tile.unselect_tile()
 		new_tile.select_tile()
 		selected_tile = new_tile
+		if pickedItems == []:
+			$LabelCounter.position = new_tile.get_node("Label").global_position
 
 func pick_items(tile:TileContainer):
 	if tile is TileContainer:
@@ -93,6 +101,7 @@ func pick_items(tile:TileContainer):
 					if pickedItems == []:
 						land_item(last_picked_item)
 						self.remove_child(last_picked_item)
+					
 					tile.add_item(last_picked_item)
 			else:
 				# Swap items
@@ -113,7 +122,7 @@ func pick_items(tile:TileContainer):
 						self.add_child(last_tempo_item)
 						hover_item(last_tempo_item)
 					pickedItems.push_back(last_tempo_item)
-					
+			
 		else:
 			if tile.content != []:
 				# Pick items
@@ -123,7 +132,15 @@ func pick_items(tile:TileContainer):
 					if i == 0:
 						self.add_child(last_tile_content)
 						hover_item(last_tile_content)
+						
 					pickedItems.push_back(last_tile_content)
+
+		if pickedItems.size() > 1:
+			$LabelCounter.visible = true
+			$LabelCounter.text = String.num(pickedItems.size())
+			$LabelCounter.modulate.a = 1
+		else:
+			$LabelCounter.visible = false
 
 func animations_process(_delta):
 	if moving:
@@ -131,8 +148,9 @@ func animations_process(_delta):
 			moving = false
 		else:
 			move_speed+= _delta * 2.5
-			var lerp_move = pickedItems[0].position.lerp(selected_tile.position,move_speed )
+			var lerp_move = pickedItems[0].position.lerp(selected_tile.position,move_speed)
 			pickedItems[0].position = lerp_move
+			$LabelCounter.position = $LabelCounter.position.lerp(selected_tile.get_node("Label").global_position,move_speed)
 			if pickedItems[0].position.round() == selected_tile.position.round():
 				moving = false
 
@@ -144,6 +162,7 @@ func move_animation_start(_delta):
 func hover_item(item:Node2D):
 	item.scale += Vector2(0.1,0.1)
 	item.modulate.a = 0.9
+	move_child($LabelCounter,-1)
 	item.position = selected_tile.position
 	$PickItem.play()
 

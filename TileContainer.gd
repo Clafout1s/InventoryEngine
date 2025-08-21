@@ -41,11 +41,13 @@ func unselect_tile():
 func add_item(item:Node2D):
 	assert(item.has_method("equals"))
 	content.push_back(item)
+	add_to_display(1)
 	if content.size() == 1:
 		add_child(item)
 
 func remove_item()->Node2D:
 	var old_content = content.pop_back()
+	substract_to_display(1)
 	if content.size() == 0:
 		remove_child(old_content)
 	return old_content
@@ -74,4 +76,22 @@ func next_down()->TileAbstract:
 	else:
 		return down
 	
+func get_number_displayed()->int:
+	return int($Label.text)
+
+func substract_to_display(value:int):
+	var new_num:int = get_number_displayed() - value
+	$Label.text = String.num(new_num)
+	if get_number_displayed() <= 1:
+		$Label.visible = false
+	else:
+		$Label.visible = true
+
+func add_to_display(value:int):
+	var new_num:int = get_number_displayed() + value
+	$Label.text = String.num(new_num)
+	if get_number_displayed() <= 1:
+		$Label.visible = false
+	else:
+		$Label.visible = true
 	

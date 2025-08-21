@@ -1,10 +1,40 @@
-[gd_scene load_steps=4 format=3 uid="uid://dca41g2iqgfgi"]
+[gd_scene load_steps=6 format=3 uid="uid://dca41g2iqgfgi"]
 
 [ext_resource type="Script" path="res://TileContainer.gd" id="1_spyiy"]
 [ext_resource type="Texture2D" uid="uid://dy4y0qsxj2gr4" path="res://images/tileContainer.png" id="2_j4jb6"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vs51q"]
 size = Vector2(128, 128)
+
+[sub_resource type="FontFile" id="FontFile_ldtm5"]
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/25/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/40/0 = Vector2(0, 0)
+cache/0/25/0/ascent = 0.0
+cache/0/25/0/descent = 0.0
+cache/0/25/0/underline_position = 0.0
+cache/0/25/0/underline_thickness = 0.0
+cache/0/25/0/scale = 1.0
+cache/0/25/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/25/0/kerning_overrides/25/0 = Vector2(0, 0)
+cache/0/25/0/kerning_overrides/40/0 = Vector2(0, 0)
+cache/0/40/0/ascent = 0.0
+cache/0/40/0/descent = 0.0
+cache/0/40/0/underline_position = 0.0
+cache/0/40/0/underline_thickness = 0.0
+cache/0/40/0/scale = 1.0
+cache/0/40/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/40/0/kerning_overrides/25/0 = Vector2(0, 0)
+cache/0/40/0/kerning_overrides/40/0 = Vector2(0, 0)
+
+[sub_resource type="LabelSettings" id="LabelSettings_o5ivg"]
+font = SubResource("FontFile_ldtm5")
+font_size = 40
 
 [node name="TileContainer" type="Node2D"]
 script = ExtResource("1_spyiy")
@@ -16,6 +46,15 @@ texture = ExtResource("2_j4jb6")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource("RectangleShape2D_vs51q")
+
+[node name="Label" type="Label" parent="."]
+offset_left = 19.0
+offset_top = 11.0
+offset_right = 59.0
+offset_bottom = 59.0
+label_settings = SubResource("LabelSettings_o5ivg")
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [connection signal="mouse_entered" from="Area2D" to="." method="_on_area_2d_mouse_entered"]
 [connection signal="mouse_exited" from="Area2D" to="." method="_on_area_2d_mouse_exited"]
