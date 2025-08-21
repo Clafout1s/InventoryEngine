@@ -16,13 +16,13 @@ func _ready():
 
 func _physics_process(_delta):
 	if constructed and not blocked and not moving:
-		if Input.is_action_just_pressed("up"):
+		if Input.is_action_pressed("up"):
 			up_key_function(_delta)
-		if Input.is_action_just_pressed("down"):
+		if Input.is_action_pressed("down"):
 			down_key_function(_delta)
-		if Input.is_action_just_pressed("left"):
+		if Input.is_action_pressed("left"):
 			left_key_function(_delta)
-		if Input.is_action_just_pressed("right"):
+		if Input.is_action_pressed("right"):
 			right_key_function(_delta)
 		if Input.is_action_just_pressed("leftClick"):
 			left_click_function(_delta)
@@ -41,10 +41,12 @@ func constructor(scene:Node2D,tile_array:Array,tile_data:TileGenerationData):
 		first.add_item(preload("res://InventoryItem.tscn").instantiate())
 	var rng = RandomNumberGenerator.new()
 	for i in range(tile_array.size()):
-		for y in range(tile_array.size()):
+		for y in range(tile_array[i].size()):
 			if rng.randf() >= 2./3.:
-				tile_array[i][y].add_item(preload("res://InventoryItem.tscn").instantiate())
+				if tile_array[i][y] is TileContainer:
+					tile_array[i][y].add_item(preload("res://InventoryItem.tscn").instantiate())
 	$LabelCounter.position = tile_array[0][0].get_node("Label").global_position
+	$LabelCounter.scale = tile_array[0][0].get_node("Label").scale * tile_array[0][0].scale
 	constructed = true
 	return self
 
@@ -72,20 +74,31 @@ func right_click_function(_delta):
 		selected_tile.add_item(preload("res://InventoryItem.tscn").instantiate())
 	
 func left_key_function(_delta):
-	move_animation_start(_delta)
-	select_tile(selected_tile.next_left())
+	if button_spam_cooldown():
+		move_animation_start(_delta)
+		select_tile(selected_tile.next_left())
 
 func right_key_function(_delta):
-	move_animation_start(_delta)
-	select_tile(selected_tile.next_right())
+	if button_spam_cooldown():
+		move_animation_start(_delta)
+		select_tile(selected_tile.next_right())
 
 func up_key_function(_delta):
-	move_animation_start(_delta)
-	select_tile(selected_tile.next_up())
+	if button_spam_cooldown():
+		move_animation_start(_delta)
+		select_tile(selected_tile.next_up())
 
 func down_key_function(_delta):
-	move_animation_start(_delta)
-	select_tile(selected_tile.next_down())
+	if button_spam_cooldown():
+		move_animation_start(_delta)
+		select_tile(selected_tile.next_down())
+
+func button_spam_cooldown()->bool:
+	if $ButtonSpamCd.is_stopped():
+		$ButtonSpamCd.start()
+		return true
+	else:
+		return false
 
 func select_tile(new_tile:TileContainer):
 	if new_tile is TileContainer:
@@ -104,7 +117,7 @@ func pick_items(tile:TileContainer):
 				while pickedItems != []:
 					last_picked_item = pickedItems.pop_back()
 					if pickedItems == []:
-						land_item(last_picked_item)
+						land_item(last_picked_item,tile)
 						self.remove_child(last_picked_item)
 					tile.add_item(last_picked_item)
 			else:
@@ -118,13 +131,13 @@ func pick_items(tile:TileContainer):
 					var last_picked_item = pickedItems.pop_front()
 					if(i_picked == 0):
 						self.remove_child(last_picked_item)
-						land_item(last_picked_item)
+						land_item(last_picked_item,tile)
 					tile.add_item(last_picked_item) # popping front to preserve order
 				for i_tempo in range(temporary_array.size()):
 					var last_tempo_item = temporary_array.pop_back()
 					if(i_tempo == 0):
 						self.add_child(last_tempo_item)
-						hover_item(last_tempo_item)
+						hover_item(last_tempo_item,tile)
 					pickedItems.push_back(last_tempo_item)
 			
 		else:
@@ -135,7 +148,7 @@ func pick_items(tile:TileContainer):
 					last_tile_content = tile.remove_item()
 					if i == 0:
 						self.add_child(last_tile_content)
-						hover_item(last_tile_content)
+						hover_item(last_tile_content,tile)
 					pickedItems.push_back(last_tile_content)
 
 		if pickedItems.size() > 1:
@@ -162,15 +175,15 @@ func move_animation_start(_delta):
 	move_speed = 0 
 	$MoveSelect.play()
 
-func hover_item(item:Node2D):
-	item.scale += Vector2(0.1,0.1)
+func hover_item(item:Node2D,tile:TileContainer):
+	item.scale *= tile.scale
 	item.modulate.a = 0.9
 	move_child($LabelCounter,-1)
 	item.position = selected_tile.position
 	$PickItem.play()
 
-func land_item(item:Node2D):
+func land_item(item:Node2D,tile:TileContainer):
 	item.modulate.a = 1
-	item.scale -= Vector2(0.1,0.1)
+	item.scale /= tile.scale
 	item.position = Vector2(0,0)
 	$DropItem.play()

@@ -43,7 +43,6 @@ func generate_tiles(scene:Node2D,data:TileGenerationData)->Node2D:
 		# in what dimension do the tiles take the most space
 		if ((data.tile_size + data.margin) * nb.x - l) > ((data.tile_size + data.margin) * nb.y- h):
 			#resizing based on columns
-			print(l," ",nb)
 			s = (l/nb.x) - data.margin
 		else:
 			#resizing based on lines
